@@ -17,9 +17,9 @@ type client struct {
 }
 
 func (c *client) read() {
-	fmt.Println("reading")
 	for {
 		if _, msg, err := c.socket.ReadMessage(); err == nil {
+			fmt.Println("reading from socket")
 			fmt.Println(msg)
 			c.room.forward <- msg
 		} else {
@@ -30,8 +30,9 @@ func (c *client) read() {
 }
 
 func (c *client) write() {
-	fmt.Println("writing")
 	for msg := range c.send {
+		fmt.Println("writing to socket")
+		fmt.Println(msg)
 		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
 			break
 		}
