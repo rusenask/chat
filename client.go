@@ -1,10 +1,6 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/gorilla/websocket"
-)
+import "github.com/gorilla/websocket"
 
 //client representsa single chatting user
 type client struct {
@@ -19,8 +15,6 @@ type client struct {
 func (c *client) read() {
 	for {
 		if _, msg, err := c.socket.ReadMessage(); err == nil {
-			fmt.Println("reading from socket")
-			fmt.Println(msg)
 			c.room.forward <- msg
 		} else {
 			break
@@ -31,8 +25,6 @@ func (c *client) read() {
 
 func (c *client) write() {
 	for msg := range c.send {
-		fmt.Println("writing to socket")
-		fmt.Println(msg)
 		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
 			break
 		}

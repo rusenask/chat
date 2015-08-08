@@ -43,7 +43,9 @@ func (r *room) run() {
 			//leaving
 			delete(r.clients, client)
 			close(client.send)
+			r.tracer.Trace("Client left")
 		case msg := <-r.forward:
+			r.tracer.Trace("Message received: ", string(msg))
 			//forward message to all clients
 			for client := range r.clients {
 				select {
