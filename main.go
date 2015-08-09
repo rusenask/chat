@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -32,8 +34,20 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.templ.Execute(w, r)
 }
 
-func main() {
+type Configuration struct {
+	GoogleKey    string
+	GoogleSecret string
+}
 
+func main() {
+	file, _ := os.Open("conf.json")
+	decoder := json.NewDecoder(file)
+	configuration := Configuration{}
+	err := decoder.Decode(&configuration)
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	fmt.Println(configuration.GoogleKey)
 	// looking for option args when starting App
 	// like ./chat -addr=":3000" would start on this port
 	var addr = flag.String("addr", ":8080", "App address")
