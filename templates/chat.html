@@ -25,7 +25,7 @@
               alert("Error: There is no socket connection.");
               return false;
             }
-            socket.send(msgBox.val());
+            socket.send(JSON.stringify({"Message":msgBox.val()}));
             msgBox.val("");
             return false;
           });
@@ -36,9 +36,16 @@
             socket.onclose = function() {
               alert("Connection has been closed.");
             }
+            // expecting JSON, also adding sender's name
             socket.onmessage = function(e) {
-              messages.append($("<li>").text(e.data));
-            }
+            var msg = eval("("+e.data+")");
+            messages.append(
+              $("<li>").append(
+                $("<strong>").text(msg.Name + ": "),
+                $("<span>").text(msg.Message)
+              )
+            );
+          }
           }
         });
       </script>
