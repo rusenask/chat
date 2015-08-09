@@ -34,12 +34,17 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.templ.Execute(w, r)
 }
 
+// Configuration defining authentication keys for OAuth
+// TODO: auth details should be nested under it's own key to make room for more
+// configs
 type Configuration struct {
 	GoogleKey    string
 	GoogleSecret string
 }
 
 func main() {
+	// reading configuration file and creating "configuration" object to store
+	// values
 	file, _ := os.Open("conf.json")
 	decoder := json.NewDecoder(file)
 	configuration := Configuration{}
@@ -47,7 +52,6 @@ func main() {
 	if err != nil {
 		fmt.Println("error:", err)
 	}
-	fmt.Println(configuration.GoogleKey)
 	// looking for option args when starting App
 	// like ./chat -addr=":3000" would start on this port
 	var addr = flag.String("addr", ":8080", "App address")
@@ -64,7 +68,8 @@ func main() {
 			"http://localhost:8080/auth/callback/facebook"),
 		github.New("key", "secret",
 			"http://localhost:8080/auth/callback/github"),
-		google.New("key", "secret",
+		google.New(configuration.GoogleKey,
+			configuration.GoogleSecret,
 			"http://localhost:8080/auth/callback/google"),
 	)
 	r := newRoom()
