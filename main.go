@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -21,7 +20,6 @@ type templateHandler struct {
 
 // ServeHTTP handles the HTTP Request
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Serving HTTP")
 	t.once.Do(func() {
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
