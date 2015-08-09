@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/stretchr/gomniauth"
 )
 
 type authHandler struct {
@@ -24,6 +26,8 @@ func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.next.ServeHTTP(w, r)
 	}
 }
+
+// MustAuth wraps standard handler and enforces authentication
 func MustAuth(handler http.Handler) http.Handler {
 	return &authHandler{next: handler}
 }
@@ -37,7 +41,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	provider := segs[3]
 	switch action {
 	case "login":
-		log.Println("TODO handle login for", provider)
+		provider, err := gomniauth.Provider(provider)
+		if err != nil {
+			log.Fatalln("Eerror when trying to get provider", provider, "-", err)
+		}
+		loginUrl, err := provider.GetBeginAuthURL(nil, nil)
+		if err != nil {
+			log.Fatalln("error when trying to GetBeginAuthURL for", provider, "-", err)
+		}
+		// Since http.ResponseWriter is an interface and header is a method on that
+		// interface, we have to call it so it will return an http.Header
+		// instead of w.Header.Set(...) we use w.Header().Set(...)
+		w.Header().Set("Location", loginUrl)
+		w.WriteHeader(http.StatusTemporaryRedirect)
 	default:
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "auth action %s not supported", action)
