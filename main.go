@@ -9,6 +9,12 @@ import (
 	"sync"
 	"text/template"
 	"trace"
+
+	"github.com/stretchr/gomniauth"
+	"github.com/stretchr/gomniauth/providers/facebook"
+	"github.com/stretchr/gomniauth/providers/github"
+	"github.com/stretchr/gomniauth/providers/google"
+	"github.com/stretchr/signature"
 )
 
 // templ represents a single template
@@ -27,10 +33,26 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	// looking for option args when starting App
 	// like ./chat -addr=":3000" would start on this port
 	var addr = flag.String("addr", ":8080", "App address")
 	flag.Parse() // parse the flag
+	// setting up gomniauth
+	// creating random key http://godoc.org/github.com/stretchr/signature#RandomKey
+	// in addition to gomniauth package we need to download:
+	// go get github.com/clbanning/x2j
+	// go get github.com/ugorji/go/codec
+	// go get labix.org/v2/mgo/bson
+	gomniauth.SetSecurityKey(signature.RandomKey(64))
+	gomniauth.WithProviders(
+		facebook.New("key", "secret",
+			"http://localhost:8080/auth/callback/facebook"),
+		github.New("key", "secret",
+			"http://localhost:8080/auth/callback/github"),
+		google.New("key", "secret",
+			"http://localhost:8080/auth/callback/google"),
+	)
 	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 	// wrapping /chat handler with MustAuth to enforce authentication
