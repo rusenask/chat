@@ -36,6 +36,8 @@ func newRoom() *room {
 func (r *room) run() {
 	for {
 		select {
+		// arrow direction represents data direction, channel supplies data to
+		// client
 		case client := <-r.join:
 			// joining
 			r.clients[client] = true
