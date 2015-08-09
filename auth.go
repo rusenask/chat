@@ -62,20 +62,25 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatalln("Error when trying to get provider", provider, "-", err)
 		}
-
+		// Parsin RawQuery from http.Request into objx.Map (multi-purpose map type
+		// that gomniauth uses) and the CompleteAuth method uses the URL query param
+		// values to complete the authentication handshake. If all is okay - creds
+		// are given
 		creds, err := provider.CompleteAuth(objx.MustFromURLQuery(r.URL.RawQuery))
 		if err != nil {
 			log.Fatalln("Error when trying to complete auth for", provider, "-", err)
 		}
-
+		// now accessing user's basic data
 		user, err := provider.GetUser(creds)
 		if err != nil {
 			log.Fatalln("Error when trying to get user from", provider, "-", err)
 		}
-
+		fmt.Println("User authenticated: ", user.Name())
+		// encoding user data with Base64 in JSON object
 		authCookieValue := objx.New(map[string]interface{}{
 			"name": user.Name(),
 		}).MustBase64()
+		// storing encoded object in cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:  "auth",
 			Value: authCookieValue,
