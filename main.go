@@ -33,8 +33,10 @@ func main() {
 	flag.Parse() // parse the flag
 	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
+	// wrapping /chat handler with MustAuth to enforce authentication
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
+	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	// get the room going
 	go r.run()
