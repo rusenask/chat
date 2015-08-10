@@ -81,6 +81,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			"name": user.Name(),
 			// adding avatar URL to cookie
 			"avatar_url": user.AvatarURL(),
+			"email":      user.Email(),
 		}).MustBase64()
 		// storing encoded object in cookie
 		http.SetCookie(w, &http.Cookie{
