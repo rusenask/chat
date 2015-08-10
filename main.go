@@ -97,6 +97,8 @@ func main() {
 	})
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+	http.HandleFunc("/uploader", uploadHandler)
 	// get the room going
 	go r.run()
 	// start the web server
