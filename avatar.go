@@ -45,3 +45,19 @@ func (_ GravatarAvatar) GetAvatarURL(c *client) (string, error) {
 	}
 	return "", ErrNoAvatarURL
 }
+
+// FileSystemAvatar structure
+type FileSystemAvatar struct{}
+
+// UseFileSystemAvatar helper variable
+var UseFileSystemAvatar FileSystemAvatar
+
+// GetAvatarURL implements using avatar image from uploaded user files
+func (_ FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
+	if userid, ok := c.userData["userid"]; ok {
+		if useridStr, ok := userid.(string); ok {
+			return "/avatars/" + useridStr + ".jpg", nil
+		}
+	}
+	return "", ErrNoAvatarURL
+}
