@@ -84,6 +84,17 @@ func main() {
 	// wrapping /chat handler with MustAuth to enforce authentication
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
+	// logout, deleting cookie data
+	http.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
+		w.Header()["Location"] = []string{"/chat"}
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	})
 	http.HandleFunc("/auth/", loginHandler)
 	http.Handle("/room", r)
 	// get the room going
