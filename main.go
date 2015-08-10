@@ -79,7 +79,7 @@ func main() {
 			configuration.GoogleSecret,
 			"http://localhost:8080/auth/callback/google"),
 	)
-	r := newRoom(UseAuthAvatar)
+	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
 	// wrapping /chat handler with MustAuth to enforce authentication
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
