@@ -78,9 +78,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalln("Error when trying to get user from", provider, "-", err)
 		}
 		fmt.Println("User authenticated: ", user.Name())
-		// creating unique hash for each user
+		// creating new md5 hasher from crypto package, implements io.Writer interface
 		m := md5.New()
+		// ensuring email is lower case and generate md5 hash
+		// writing a string of bytes to hasher through io.WriteString
 		io.WriteString(m, strings.ToLower(user.Name()))
+		// caling Sum on hasher returns the current hash for the bytes written
 		userID := fmt.Sprintf("%x", m.Sum(nil))
 		// encoding user data with Base64 in JSON object
 		authCookieValue := objx.New(map[string]interface{}{
