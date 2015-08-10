@@ -25,9 +25,7 @@ func (c *client) read() {
 			msg.When = JSONTime(time.Now())
 			msg.Name = c.userData["name"].(string)
 			// avatarUrl is assigned from cookie
-			if avatarURL, ok := c.userData["avatar_url"]; ok {
-				msg.AvatarURL = avatarURL.(string)
-			}
+			msg.AvatarURL, _ = c.room.avatar.GetAvatarURL(c)
 			c.room.forward <- msg
 		} else {
 			break
