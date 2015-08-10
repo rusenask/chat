@@ -79,6 +79,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// encoding user data with Base64 in JSON object
 		authCookieValue := objx.New(map[string]interface{}{
 			"name": user.Name(),
+			// adding avatar URL to cookie
+			"avatar_url": user.AvatarURL(),
 		}).MustBase64()
 		// storing encoded object in cookie
 		http.SetCookie(w, &http.Cookie{
