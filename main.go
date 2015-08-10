@@ -99,6 +99,15 @@ func main() {
 	http.Handle("/room", r)
 	http.Handle("/upload", &templateHandler{filename: "upload.html"})
 	http.HandleFunc("/uploader", uploadHandler)
+	// servis static images
+	// http.StripPrefix takes Handler in, modifies the path by removing
+	// the specified prefix and passes functionality onto an inner
+	// handler. Inner handler - http.FileServer servers static files,
+	// provides index listing and generates 404 for missing objects
+	// http.Dir function allows to specify exposed folders
+	http.Handle("/avatars/",
+		http.StripPrefix("/avatars/",
+			http.FileServer(http.Dir("./avatars"))))
 	// get the room going
 	go r.run()
 	// start the web server
