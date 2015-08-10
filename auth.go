@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/md5"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -76,9 +78,14 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatalln("Error when trying to get user from", provider, "-", err)
 		}
 		fmt.Println("User authenticated: ", user.Name())
+		// creating unique hash for each user
+		m := md5.New()
+		io.WriteString(m, strings.ToLower(user.Name()))
+		userID := fmt.Sprintf("%x", m.Sum(nil))
 		// encoding user data with Base64 in JSON object
 		authCookieValue := objx.New(map[string]interface{}{
-			"name": user.Name(),
+			"userid": userID,
+			"name":   user.Name(),
 			// adding avatar URL to cookie
 			"avatar_url": user.AvatarURL(),
 			"email":      user.Email(),
