@@ -23,7 +23,8 @@ func (t JSONTime) MarshalJSON() ([]byte, error) {
 // message represents a single msg
 // now attaching sender's name, message and time
 type message struct {
-	Name    string
-	Message string
-	When    JSONTime
+	Name      string
+	Message   string
+	When      JSONTime
+	AvatarURL string
 }
