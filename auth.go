@@ -12,6 +12,28 @@ import (
 	"github.com/stretchr/objx"
 )
 
+// giving specific name through which this package will be accessed
+import gomniauthcommon "github.com/stretchr/gomniauth/common"
+
+// ChatUser exposes information that is needed in order for our Avatar
+// implementations to generate the correct URLs.
+type ChatUser interface {
+	UniqueID() string
+	AvatarURL() string
+}
+
+// chatUser defines actual implementation that implements the ChatUser interface
+// also uses Go's feature - type embedding. This way our struct implements
+// the interface automatically
+type chatUser struct {
+	gomniauthcommon.User
+	uniqueID string
+}
+
+func (u chatUser) UniqueID() string {
+	return u.uniqueID
+}
+
 type authHandler struct {
 	next http.Handler
 }
