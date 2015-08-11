@@ -99,6 +99,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatalln("Error when trying to get user from", provider, "-", err)
 		}
+		chatUser := &chatUser{User: user}
 		fmt.Println("User authenticated: ", user.Name())
 		// creating new md5 hasher from crypto package, implements io.Writer interface
 		m := md5.New()
