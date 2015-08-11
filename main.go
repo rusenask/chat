@@ -20,6 +20,9 @@ import (
 	"github.com/stretchr/signature"
 )
 
+// set the active avatar implementation
+var avatars Avatar = UseFileSystemAvatar
+
 // templ represents a single template
 type templateHandler struct {
 	once     sync.Once
@@ -79,7 +82,7 @@ func main() {
 			configuration.GoogleSecret,
 			"http://localhost:8080/auth/callback/google"),
 	)
-	r := newRoom(UseFileSystemAvatar)
+	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 	// HTTP handlers
 	// wrapping /chat handler with MustAuth to enforce authentication
