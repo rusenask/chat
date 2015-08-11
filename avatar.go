@@ -1,6 +1,10 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"io/ioutil"
+	"path"
+)
 
 // ErrNoAvatar is the error when no avatar URL is available
 var ErrNoAvatarURL = errors.New("chat: Unable to get an avatar URL")
@@ -56,7 +60,19 @@ var UseFileSystemAvatar FileSystemAvatar
 func (_ FileSystemAvatar) GetAvatarURL(c *client) (string, error) {
 	if userid, ok := c.userData["userid"]; ok {
 		if useridStr, ok := userid.(string); ok {
-			return "/avatars/" + useridStr + ".jpg", nil
+			// getting all files/directories in specified directorie
+			if files, err := ioutil.ReadDir("avatars"); err == nil {
+				// checking if file is directory - if yes, moving on
+				for _, file := range files {
+					if file.IsDir() {
+						continue
+					}
+					// if file matches userid - returning it
+					if match, _ := path.Match(useridStr+"*", file.Name()); match {
+						return "/avatars/" + file.Name(), nil
+					}
+				}
+			}
 		}
 	}
 	return "", ErrNoAvatarURL
