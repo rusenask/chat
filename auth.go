@@ -106,13 +106,17 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		// writing a string of bytes to hasher through io.WriteString
 		io.WriteString(m, strings.ToLower(user.Name()))
 		// caling Sum on hasher returns the current hash for the bytes written
-		userID := fmt.Sprintf("%x", m.Sum(nil))
+		chatUser.uniqueID = fmt.Sprintf("%x", m.Sum(nil))
+		avatarURL, err := avatars.GetAvatarURL(chatUser)
+		if err != nil {
+			log.Fatalln("Error when trying to GetAvatarURL", "-", err)
+		}
 		// encoding user data with Base64 in JSON object
 		authCookieValue := objx.New(map[string]interface{}{
-			"userid": userID,
+			"userid": chatUser.uniqueID,
 			"name":   user.Name(),
 			// adding avatar URL to cookie
-			"avatar_url": user.AvatarURL(),
+			"avatar_url": avatarURL,
 			"email":      user.Email(),
 		}).MustBase64()
 		// storing encoded object in cookie
